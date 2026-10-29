@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="DS.DeviceService/DS.DeviceService.csproj" Id="fc4b73ef-ff27-4505-9911-1df8544bc1b8" />
+  <Project Path="DS.UserService/DS.UserService.csproj" Id="f4ebdf75-8b0e-47af-973b-545a8d3b39d6" />
+  <Project Path="DS_Application/DS_Application.csproj" />
+</Solution>

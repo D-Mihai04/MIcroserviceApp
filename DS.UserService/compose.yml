@@ -1,0 +1,9 @@
+
+services:
+  userservice:
+    image: userimage
+    container_name: user-service
+    ports:
+      - "8080:8080"
+    environment:
+      ConnectionStrings__UserDb: "Host=host.docker.internal;Port=5433;Database=UserDb;Username=postgres;Password=0000"

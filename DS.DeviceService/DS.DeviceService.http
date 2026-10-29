@@ -1,0 +1,35 @@
+@DS.DeviceService_HostAddress = http://localhost:5228
+
+### Get All Devices
+GET {{DS.DeviceService_HostAddress}}/devices
+Accept: application/json
+
+### Create Device
+POST {{DS.DeviceService_HostAddress}}/devices
+Content-Type: application/json
+
+{
+  "deviceName": "Smart Meter Living Room",
+  "consumptionValue": 250,
+  "userId": null
+}
+
+### Get Device By ID (replace with real id)
+GET {{DS.DeviceService_HostAddress}}/devices/00000000-0000-0000-0000-000000000000
+Accept: application/json
+
+### Get All Devices For a User (1:N lookup)
+GET {{DS.DeviceService_HostAddress}}/devices/user/00000000-0000-0000-0000-000000000000
+Accept: application/json
+
+### Assign Device to User
+PATCH {{DS.DeviceService_HostAddress}}/devices/00000000-0000-0000-0000-000000000000/assign/00000000-0000-0000-0000-000000000000
+Accept: application/json
+
+### Unassign Device
+PATCH {{DS.DeviceService_HostAddress}}/devices/00000000-0000-0000-0000-000000000000/unassign
+Accept: application/json
+
+### Delete Device
+DELETE {{DS.DeviceService_HostAddress}}/devices/00000000-0000-0000-0000-000000000000
+Accept: application/json
