@@ -1,5 +1,6 @@
 using DS_Application.DeviceService.data;
 using DS_Application.DeviceService.entities;
+using DS.DeviceService.clients;
 using DS.DeviceService.Dtos;
 
 namespace DS.DeviceService.services;
@@ -7,10 +8,12 @@ namespace DS.DeviceService.services;
 public sealed class DeviceServices : IDeviceServices
 {
     private readonly IDeviceRepo _deviceRepository;
+    private readonly IUserClient _userClient;
 
-    public DeviceServices(IDeviceRepo deviceRepository)
+    public DeviceServices(IDeviceRepo deviceRepository, IUserClient userClient)
     {
         _deviceRepository = deviceRepository;
+        _userClient = userClient;
     }
 
     public async Task<List<DeviceDto>> GetAllAsync()
@@ -27,6 +30,15 @@ public sealed class DeviceServices : IDeviceServices
 
     public async Task<DeviceDto> CreateAsync(CreateDeviceDto request)
     {
+        if (request.UserId.HasValue)
+        {
+            var userExists = await _userClient.UserExistsAsync(request.UserId.Value);
+            if (!userExists)
+            {
+                throw new ArgumentException($"User with ID {request.UserId.Value} does not exist.");
+            }
+        }
+
         var device = new Device
         {
             Id = Guid.NewGuid(),
@@ -55,9 +67,14 @@ public sealed class DeviceServices : IDeviceServices
             device.ConsumptionValue = request.ConsumptionValue.Value;
         }
 
-        if (request.UserId != null)
+        if (request.UserId.HasValue)
         {
-            device.UserId = request.UserId;
+            var userExists = await _userClient.UserExistsAsync(request.UserId.Value);
+            if (!userExists)
+            {
+                throw new ArgumentException($"User with ID {request.UserId.Value} does not exist.");
+            }
+            device.UserId = request.UserId.Value;
         }
 
         await _deviceRepository.UpdateAsync(device);
@@ -84,6 +101,12 @@ public sealed class DeviceServices : IDeviceServices
 
     public async Task<DeviceDto?> AssignUserAsync(Guid deviceId, Guid userId)
     {
+        var userExists = await _userClient.UserExistsAsync(userId);
+        if (!userExists)
+        {
+            throw new ArgumentException($"User with ID {userId} does not exist.");
+        }
+
         var device = await _deviceRepository.GetByIdAsync(deviceId);
         if (device is null)
             return null;

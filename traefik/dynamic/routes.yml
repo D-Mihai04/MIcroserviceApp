@@ -1,0 +1,61 @@
+http:
+  routers:
+    auth-router:
+      rule: "PathPrefix(`/api/auth`) || PathPrefix(`/auth`)"
+      priority: 10
+      entryPoints:
+        - "web"
+      service: "auth-service"
+      middlewares:
+        - "strip-api-prefix"
+        - "cors-headers"
+
+    users-router:
+      rule: "PathPrefix(`/api/users`) || PathPrefix(`/users`)"
+      priority: 10
+      entryPoints:
+        - "web"
+      service: "user-service"
+      middlewares:
+        - "strip-api-prefix"
+        - "auth-forward"
+        - "cors-headers"
+
+    devices-router:
+      rule: "PathPrefix(`/api/devices`) || PathPrefix(`/devices`)"
+      priority: 10
+      entryPoints:
+        - "web"
+      service: "device-service"
+      middlewares:
+        - "strip-api-prefix"
+        - "auth-forward"
+        - "cors-headers"
+
+    frontend-router:
+      rule: "PathPrefix(`/`)"
+      priority: 1
+      entryPoints:
+        - "web"
+      service: "frontend-service"
+
+  services:
+    auth-service:
+      loadBalancer:
+        servers:
+          - url: "http://auth-service:8080"
+
+    user-service:
+      loadBalancer:
+        servers:
+          - url: "http://user-service:8080"
+
+    device-service:
+      loadBalancer:
+        servers:
+          - url: "http://device-service:8080"
+
+    frontend-service:
+      loadBalancer:
+        servers:
+          - url: "http://frontend:80"
